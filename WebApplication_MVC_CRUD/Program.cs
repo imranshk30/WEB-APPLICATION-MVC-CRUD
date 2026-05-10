@@ -17,36 +17,25 @@ builder.Services.AddAuthentication(options =>
 })
 .AddCookie(options =>
 {
-    //options.LoginPath = "/Account/Login";
-    //options.LogoutPath = "/Account/Logout";
-    //options.AccessDeniedPath = "/Account/AccessDenied";
-    //options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-    //options.SlidingExpiration = true;
+  
     options.LoginPath = "/Login/Index";
     options.LogoutPath = "/Login/Index";
     options.AccessDeniedPath = "/Login/Index";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     options.SlidingExpiration = true;
 });
-builder.Services.AddAuthentication();
-//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//    .AddCookie("CookieAuth", config =>
-//    {
-//        config.Cookie.Name = "UserLoginCookie";
-//        config.LoginPath = "/Login/Index";
-//    });
 
-//var app = builder.Build();
-//app.UseSession();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 //builder.Services.AddHttpClient();
+// Add a named HttpClient for the Student API
+//The base address for the HttpClient is set to "https://localhost:7246/api/Student", which is the endpoint for the Student API.
 builder.Services.AddHttpClient("Student", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7246/api/");
+    client.BaseAddress = new Uri("https://localhost:7246/api/Student");
 });
 var app = builder.Build();
-app.UseSession();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -54,17 +43,14 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseRouting();
-app.UseAuthentication();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-
-
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSession();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Student}/{action=Index}/{ID?}");
+    pattern: "{controller=Student}/{action=Index}/{Id?}");
 
 app.Run();

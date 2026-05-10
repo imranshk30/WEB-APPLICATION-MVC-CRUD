@@ -1,67 +1,83 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-namespace WebApplication_MVC_CRUD.Controllers
+using WebApplication_MVC_CRUD.Models;
+
+public class LoginController : Controller
 {
-   
-    public class LoginController : Controller
+    private readonly IHttpClientFactory _clientFactory;
+
+    public LoginController(IHttpClientFactory clientFactory)
     {
-        private readonly HttpClient client;
+        _clientFactory = clientFactory;
+    }
 
-        public LoginController(IHttpClientFactory factory)
+    [HttpGet]
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Index(LoginRequest model)
+    {
+        //if (!ModelState.IsValid)
+        //    return View(model);
+
+        var client = _clientFactory.CreateClient("Student");
+
+        var response = await client.PostAsJsonAsync("auth/token", new
         {
-            client = factory.CreateClient();
+            Username = model.Username,
+            Password = model.Password
+        });
+     
+        if (!response.IsSuccessStatusCode)
+        {
+            ModelState.AddModelError("", "Invalid username or password");
+            return View(model);
+        }
+        //mvc reads the response and deserializes it into a LoginResponse object, which contains the access token.
+        ////If the token is successfully retrieved, it is stored in the session and the user is authenticated using cookie authentication.
+        /////Finally, the user is redirected to the Student index page.
+        ///
+        var tokenResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+        if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.AccessToken))
+        {
+            ModelState.AddModelError("", "Failed to retrieve access token");
+            return View(model);
         }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
+        //HttpContext.Session.SetString("AccessToken", tokenResponse.AccessToken);
 
-        [HttpPost]
-        public async Task<IActionResult> Index(LoginRequest model)
-        {
-            // 🔴 BREAKPOINT HERE → WILL HIT
-            var response = await client.PostAsJsonAsync(
-                "https://localhost:7246/api/auth/login", model);
+        //return RedirectToAction("Index", "Student");
+        // mapping AccessToken session to tokenResponse.AccessToken property forced by [JsonPropertyName]
+        //MVC Stores JWT In Session
 
-            if (!response.IsSuccessStatusCode)
-                return View(model);
+        HttpContext.Session.SetString("AccessToken", tokenResponse!.AccessToken);
 
-            // Read the response as a dynamic object to access properties like Username and AccessToken
-            var authJson = await response.Content.ReadAsStringAsync();
-            var auth = JsonConvert.DeserializeObject<LoginResponse>(authJson);
+        // Claims = user identity information for authentication(cookies).
+        
+        var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.Name, model.Username!)
+};
 
-            // Fix: Check for null before dereferencing 'auth'
-            if (auth == null || string.IsNullOrEmpty(auth.Username) || string.IsNullOrEmpty(auth.AccessToken))
-            {
-                ModelState.AddModelError("", "Invalid login");
-                return View(model);
-            }
+        var identity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
 
-           
-            string Username = auth.Username;
-            string accessToken = auth.AccessToken;
+        //ASP.NET uses ClaimsPrincipal as the logged-in user object.
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, Username)
-            };
+        var principal = new ClaimsPrincipal(identity);
 
-            var identity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identity));
-
-            HttpContext.Session.SetString("AccessToken", accessToken);
-
-            return RedirectToAction("Index", "Student");
-        }
+        return RedirectToAction("Index", "Student");
     }
 }
