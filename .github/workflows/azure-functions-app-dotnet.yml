@@ -17,13 +17,13 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore
-      run: dotnet restore ./WebApplication_MVC_CRUD/WebApplication_MVC_CRUD/WebApplication_MVC_CRUD.csproj
+      run: dotnet restore C:\Users\USER\source\repos\WebApplication_MVC_CRUD\WebApplication_MVC_CRUD/WebApplication_MVC_CRUD.csproj
 
     - name: Build
-      run: dotnet build ./WebApplication_MVC_CRUD/WebApplication_MVC_CRUD/WebApplication_MVC_CRUD.csproj --configuration Release --no-restore
+      run: dotnet build C:\Users\USER\source\repos\WebApplication_MVC_CRUD\WebApplication_MVC_CRUD/WebApplication_MVC_CRUD.csproj--configuration Release --no-restore
 
     - name: Publish
-      run: dotnet publish ./WebApplication_MVC_CRUD/WebApplication_MVC_CRUD/WebApplication_MVC_CRUD.csproj -c Release -o publish
+      run: dotnet publish C:\Users\USER\source\repos\WebApplication_MVC_CRUD\WebApplication_MVC_CRUD/WebApplication_MVC_CRUD.csproj -c Release -o publish
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
