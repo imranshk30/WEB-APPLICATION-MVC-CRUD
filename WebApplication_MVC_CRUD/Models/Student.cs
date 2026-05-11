@@ -20,7 +20,7 @@ namespace WebApplication_MVC_CRUD.Models
         public int age { get; set; }
         [Required]
         [StringLength(2)]
-            [RegularExpression(@"^[1-9]$|^25$", ErrorMessage = "Standard must be a number between 1 and 25.")]
+        [RegularExpression(@"^([1-9]|1[0-9]|2[0-5])$", ErrorMessage = "Standard must be a number between 1 and 25.")]
         public string? standard { get; set; }
         [Required]
         [StringLength(50, MinimumLength = 3)]
