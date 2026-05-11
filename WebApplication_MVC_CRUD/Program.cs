@@ -34,10 +34,11 @@ builder.Services.AddControllersWithViews();
 //{
 //    client.BaseAddress = new Uri("https://WebApplicationCRUD.azurewebsites.net/");
 //});
-builder.Services.AddHttpClient<ApiClient>("Student", client =>
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("Student", client =>
 {
     client.BaseAddress = new Uri(
-        builder.Configuration["ApiSettings:BaseUrl"]!);
+        "https://webapplicationcrud-eqhxbsasfgekbwcr.canadaeast-01.azurewebsites.net/api/");
 });
 
 var app = builder.Build();
