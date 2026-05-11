@@ -34,7 +34,7 @@ builder.Services.AddControllersWithViews();
 //{
 //    client.BaseAddress = new Uri("https://WebApplicationCRUD.azurewebsites.net/");
 //});
-builder.Services.AddHttpClient<ApiClient>(client =>
+builder.Services.AddHttpClient<ApiClient>("Student", client =>
 {
     client.BaseAddress = new Uri(
         builder.Configuration["ApiSettings:BaseUrl"]!);
