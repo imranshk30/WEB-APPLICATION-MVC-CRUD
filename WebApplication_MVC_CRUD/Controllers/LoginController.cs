@@ -23,8 +23,8 @@ public class LoginController : Controller
     [HttpPost]
     public async Task<IActionResult> Index(LoginRequest model)
     {
-        //if (!ModelState.IsValid)
-        //    return View(model);
+        if (!ModelState.IsValid)
+            return View(model);
 
         var client = _clientFactory.CreateClient("Student");
 
