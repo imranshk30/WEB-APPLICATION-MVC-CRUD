@@ -13,7 +13,7 @@ public class ApiClient
     public ApiClient()
     {
         _client = new HttpClient();
-        _client.BaseAddress = new Uri("https://localhost:5001/");
+        _client.BaseAddress = new Uri("https://WebApplicationCRUD.azurewebsites.net/");
     }
 
 

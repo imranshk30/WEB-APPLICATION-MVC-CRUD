@@ -23,7 +23,7 @@ namespace WebApplication_MVC_CRUD.Controllers
         // Since we have configured the HttpClient with a base address in Program.cs, we can just use the relative URL here.
         // This field will be used to specify the relative URL for the student API endpoints when making HTTP requests.
         // this is relative endpoint combined with the base address configured in Program.cs to form the full URL for API calls.
-        //https://localhost:7246/api/student
+       
 
         private readonly string _studentUrl = "student";
         // Inject the IHttpClientFactory to create HttpClient instances
