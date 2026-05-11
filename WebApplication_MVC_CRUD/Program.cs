@@ -32,7 +32,7 @@ builder.Services.AddControllersWithViews();
 //The base address for the HttpClient is set to "https://localhost:7246/api/Student", which is the endpoint for the Student API.
 builder.Services.AddHttpClient("Student", client =>
 {
-    client.BaseAddress = new Uri("https://WebApplicationCRUD.azurewebsites.net/api/");
+    client.BaseAddress = new Uri("https://WebApplicationCRUD.azurewebsites.net/");
 });
 
 var app = builder.Build();
